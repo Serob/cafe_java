@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="/css/style.css">
+		<title>SFL task - Products</title>
+	</head>
+	<body>
+		<div class="container">
+            <div class="nav">
+                <ul>
+                    <li><a href="users">Users</a></li>
+                    <li><a href="tables">Tables</a></li>
+                    <li class="active"><a href="products">Products</a></li>
+                </ul>
+            </div>
+
+            <div class="content">
+                <div class="table-data" id="products">
+                    <h2>Products</h2>
+                </div>
+                <div class="add">
+                    <form id="addProduct">
+                        <input type="text" name="productName" placeholder="Name" />
+                        <button type="button" onclick="addProduct()">Create Product</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <script type="text/javascript">
+            window.onload = function () {
+                const user_id = sessionStorage.getItem("user_id");
+                if (!user_id) {
+                    const overlay = document.createElement('div');
+                    overlay.setAttribute('class', 'overlay');
+                    overlay.innerHTML = "Not authorized!";
+                    document.body.appendChild(overlay);
+                } else {
+                    fetch("/api/products", {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                    }).then(response => {
+                        if (response.status === 200) {
+                            return response.json();
+                        } else {
+                            const err = "Unexpected problem, please reload the page.";
+                            throw new Error(err);
+                        }
+                    }).then(function (data) {
+                        const headers = ["Name", "E-mail"];
+                        const table = document.createElement('table');
+                        table.setAttribute('id', 'productsTable');
+                        let tr = table.insertRow(0);
+
+                        for (let i = 0; i < headers.length; i++) {
+                            const th = document.createElement('th');
+                            th.innerHTML = headers[i];
+                            tr.appendChild(th);
+                        }
+
+                        for (let i = 0; i < data.length; i++) {
+                            tr = table.insertRow(1);
+                            let td = document.createElement('td');
+                            td.innerHTML = data[i].name;
+                            tr.appendChild(td);
+
+                            td = document.createElement('td');
+                            td.innerHTML = data[i].user.email;
+                            tr.appendChild(td);
+                        }
+
+                        const div = document.getElementById('products');
+                        div.appendChild(table);
+                    }).catch(err => {
+                        alert(err);
+                    });
+                }
+            }
+
+            function addProduct() {
+                const addProductForm = document.getElementById("addProduct").elements;
+                const data = {
+                    name: addProductForm.productName.value,
+
+                };
+
+                const user_id = sessionStorage.getItem("user_id");
+                fetch(`/api/products/?manager_id=${user_id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                }).then(response => {
+                    if (response.status === 201) {
+                        return response.json();
+                    } else {
+                        const err = "Unexpected problem, please reload the page.";
+                        throw new Error(err);
+                    }
+                }).then(function (data) {
+                    const table = document.getElementById('productsTable');
+
+                    const rowCnt = table.rows.length;
+                    const tr = table.insertRow(rowCnt);
+                    let td = document.createElement('td');
+                    td.innerHTML = data.name;
+                    tr.appendChild(td);
+
+                    td = document.createElement('td');
+                    td.innerHTML = data.user.email;
+                    tr.appendChild(td);
+                }).catch(err => {
+                    alert(err);
+                });
+            }
+        </script>
+	</body>
+</html>

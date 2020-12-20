@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="/css/style.css">
+		<title>SFL task</title>
+	</head>
+	<body>
+		<div class="main">
+            <form id="loginForm">
+                <input type="text" name="userName" placeholder="E-Mail" />
+                <input type="password" name="password" placeholder="Password" />
+                <button type="button" onclick="login()">Sign in</button>
+            </form>
+        </div>
+        
+        <script type="text/javascript">
+            function login() {
+                const loginForm = document.getElementById("loginForm").elements;
+                const data = {
+                    email: loginForm.userName.value,
+                    password: loginForm.password.value,
+                };
+
+                fetch("api/users/login", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                }).then(response => {
+                    if (response.status === 200) {
+                        return response.json();
+                    } else {
+                        const err = response.status === 401 ? "Wrong credentials!" : "Unexpected problem.";
+                        throw new Error(err);
+                    }
+                }).then(function (data) {
+                    sessionStorage.setItem("user_id", data.id);
+                    window.location.href = "/users";
+                }).catch(err => {
+                    alert(err);
+                });
+            }
+        </script>
+	</body>
+</html>
