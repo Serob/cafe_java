@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -20,7 +21,7 @@ public class CafeTable extends BaseEntity {
     private User assignedTo;
 
     @OneToMany(mappedBy = "table")
-    private Set<Order> orders ;
+    private Set<Order> orders = new HashSet<>();
 
     private int number;
 

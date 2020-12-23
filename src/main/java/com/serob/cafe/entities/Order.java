@@ -6,6 +6,7 @@ import com.serob.cafe.utils.OrderStatus;
 
 import javax.persistence.*;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -21,7 +22,7 @@ public class Order extends BaseEntity{
     private CafeTable table;
 
     @OneToMany(mappedBy = "order")
-    private Set<ProductInOrder> productsInOrder;
+    private Set<ProductInOrder> productsInOrder = new HashSet<>();
 
     @Enumerated(EnumType.STRING)
     @Column(length = 8)

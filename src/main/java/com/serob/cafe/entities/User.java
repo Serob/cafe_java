@@ -6,6 +6,7 @@ import com.serob.cafe.utils.UserRole;
 
 import javax.persistence.*;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.validation.constraints.Email;
@@ -16,15 +17,15 @@ import javax.validation.constraints.NotNull;
 public class User extends BaseEntity{
 
     @OneToMany(mappedBy = "user", orphanRemoval = true)
-    private Set<Order> orders;
+    private Set<Order> orders = new HashSet<>(); //to not get NullPointer on Collections.unmidifiable()
 
     @OneToMany(mappedBy = "createdBy", cascade = CascadeType.PERSIST)
     @JsonIgnoreProperties({"assignedTo", "createdBy",})
-    private Set<CafeTable> createdTables;
+    private Set<CafeTable> createdTables = new HashSet<>();
 
     @OneToMany(mappedBy = "assignedTo")
     @JsonIgnoreProperties({"assignedTo", "createdBy"})
-    private Set<CafeTable> assignedTables;
+    private Set<CafeTable> assignedTables = new HashSet<>();
 
     @OneToMany(mappedBy = "user")
 //    @Fetch(value = FetchMode.SUBSELECT)
