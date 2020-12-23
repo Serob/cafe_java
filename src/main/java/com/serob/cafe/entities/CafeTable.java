@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 @Entity
 public class CafeTable extends BaseEntity {
@@ -20,7 +20,7 @@ public class CafeTable extends BaseEntity {
     private User assignedTo;
 
     @OneToMany(mappedBy = "table")
-    private List<Order> orders = new ArrayList<>();
+    private Set<Order> orders ;
 
     private int number;
 
@@ -40,8 +40,8 @@ public class CafeTable extends BaseEntity {
         this.assignedTo = assignedTo;
     }
 
-    public List<Order> getOrders() {
-        return Collections.unmodifiableList(orders);
+    public Set<Order> getOrders() {
+        return Collections.unmodifiableSet(orders);
     }
 
     public int getNumber() {

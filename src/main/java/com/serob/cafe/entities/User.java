@@ -5,9 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.serob.cafe.utils.UserRole;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
@@ -17,19 +16,20 @@ import javax.validation.constraints.NotNull;
 public class User extends BaseEntity{
 
     @OneToMany(mappedBy = "user", orphanRemoval = true)
-    private List<Order> orders = new ArrayList<>();
+    private Set<Order> orders;
 
     @OneToMany(mappedBy = "createdBy", cascade = CascadeType.PERSIST)
     @JsonIgnoreProperties({"assignedTo", "createdBy",})
-    private List<CafeTable> createdTables = new ArrayList<>();
+    private Set<CafeTable> createdTables;
 
     @OneToMany(mappedBy = "assignedTo")
     @JsonIgnoreProperties({"assignedTo", "createdBy"})
-    private List<CafeTable> assignedTables = new ArrayList<>();
+    private Set<CafeTable> assignedTables;
 
     @OneToMany(mappedBy = "user")
+//    @Fetch(value = FetchMode.SUBSELECT)
     @JsonIgnoreProperties({"user"})
-    private List<Product> products = new ArrayList<>();
+    private Set<Product> products;
 
     @Enumerated(EnumType.STRING)
 //    @NotNull //commented to have possibility to set in controller
@@ -52,13 +52,13 @@ public class User extends BaseEntity{
     /*
     These lists are read-only to have a control over updates
      */
-    public List<Order> getOrders() {
-        return Collections.unmodifiableList(orders);
+    public Set<Order> getOrders() {
+        return Collections.unmodifiableSet(orders);
     }
 
-    public List<CafeTable> getCreatedTables() {
+    public Set<CafeTable> getCreatedTables() {
 //        return Collections.unmodifiableList(createdTables);
-        return createdTables;
+        return Collections.unmodifiableSet(createdTables);
     }
 
     public void addTable(CafeTable table){
@@ -66,12 +66,12 @@ public class User extends BaseEntity{
         createdTables.add(table);
     }
 
-    public List<CafeTable> getAssignedTables() {
-        return Collections.unmodifiableList(assignedTables);
+    public Set<CafeTable> getAssignedTables() {
+        return Collections.unmodifiableSet(assignedTables);
     }
 
-    public List<Product> getProducts() {
-        return Collections.unmodifiableList(products);
+    public Set<Product> getProducts() {
+        return products;
     }
 
     /**

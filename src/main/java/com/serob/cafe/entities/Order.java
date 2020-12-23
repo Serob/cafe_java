@@ -5,9 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.serob.cafe.utils.OrderStatus;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name ="order_item")
@@ -22,7 +21,7 @@ public class Order extends BaseEntity{
     private CafeTable table;
 
     @OneToMany(mappedBy = "order")
-    private List<ProductInOrder> productsInOrder = new ArrayList<>();
+    private Set<ProductInOrder> productsInOrder;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 8)
@@ -44,11 +43,12 @@ public class Order extends BaseEntity{
         this.table = table;
     }
 
-    public List<ProductInOrder> getProductsInOrder() {
-        return Collections.unmodifiableList(productsInOrder);
+    public Set<ProductInOrder> getProductsInOrder() {
+        return Collections.unmodifiableSet(productsInOrder);
     }
 
     public void addProductsInOrder(ProductInOrder productInOrders) {
+        productInOrders.setOrder(this);
         this.productsInOrder.add(productInOrders);
     }
 

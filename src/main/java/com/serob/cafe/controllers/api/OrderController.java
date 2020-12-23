@@ -13,8 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -53,7 +53,7 @@ public class OrderController {
         }
 
         CafeTable table = tableOptional.get();
-        List<Order> existingOrders = table.getOrders();
+        Set<Order> existingOrders = table.getOrders();
         boolean hasOpen = existingOrders.stream().anyMatch(Order::isOpen);
         if (hasOpen) {
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();

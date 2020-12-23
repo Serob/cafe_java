@@ -1,18 +1,21 @@
 package com.serob.cafe.entities;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Entity
 public class Product extends BaseEntity{
 
     @ManyToOne()
+//    @Fetch(value = FetchMode.SUBSELECT)
+//    @JoinColumn(name = "user_id")
     private User user;
 
     @OneToMany(mappedBy = "product")
-    private List<ProductInOrder> productInOrders = new ArrayList<>();
+    private Set<ProductInOrder> productInOrders;
 
     @Column(length = 63)
     private String name;
@@ -25,11 +28,12 @@ public class Product extends BaseEntity{
         this.user = user;
     }
 
-    public List<ProductInOrder> getProductInOrders() {
-        return Collections.unmodifiableList(productInOrders);
+    public Set<ProductInOrder> getProductInOrders() {
+        return Collections.unmodifiableSet(productInOrders);
     }
 
     public void addProductInOrders(ProductInOrder productInOrders) {
+        productInOrders.setProduct(this);
         this.productInOrders.add(productInOrders);
     }
 
