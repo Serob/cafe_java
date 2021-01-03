@@ -7,13 +7,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.serob.cafe.controllers.api.UserController;
 import com.serob.cafe.entities.User;
 import com.serob.cafe.repositories.UserRepository;
-import com.serob.cafe.services.RoleUserService;
 import com.serob.cafe.utils.UserRole;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,39 +18,17 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.nio.charset.Charset;
-import java.util.Optional;
+import java.nio.charset.StandardCharsets;
 
 @WebMvcTest(UserController.class)
 public class UserControllerTest {
-    public static final MediaType APPLICATION_JSON_UTF8 = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
+    public static final MediaType APPLICATION_JSON_UTF8 = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), StandardCharsets.UTF_8);
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
     private UserRepository repository;
-
-    private String objectToRequestJson(Object obj) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
-        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
-        String requestJson = ow.writeValueAsString(obj);
-        return requestJson;
-    }
-
-    /**
-     * Represents a user who creates another user.
-     */
-    private User mockCreatorUser(Long id, UserRole role, UserRepository repository){
-        User user = new User();
-        user.setRole(role);
-        if (repository != null) {
-            when(repository.findById(id)).thenReturn(Optional.of(user));
-//            when(roleService.mustBeManager(id)).thenReturn()
-        }
-        return user;
-    }
 
     /**
      * Represents a user who is created and saved
@@ -73,7 +47,7 @@ public class UserControllerTest {
             when(repository.save(any(User.class))).thenReturn(user);
         }
 
-        return objectToRequestJson(user);
+        return UtilMethods.objectToRequestJson(user);
     }
 
     @Test
@@ -83,10 +57,10 @@ public class UserControllerTest {
         final Long WAITER_ID = 2L;
 
         //A user hwo can create another user
-        mockCreatorUser(MANAGER_ID, UserRole.MANAGER, repository);
+        UtilMethods.mockCreatorUser(MANAGER_ID, UserRole.MANAGER, repository);
 
         //A user hwo can NOT create another user
-        mockCreatorUser(WAITER_ID, UserRole.WAITER, repository);
+        UtilMethods.mockCreatorUser(WAITER_ID, UserRole.WAITER, repository);
 
         //Define expected object
         String wrongRequestJson = mockRequestedUser("mail.com", UserRole.WAITER, null, null, repository);
